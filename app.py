@@ -1,9 +1,9 @@
+import os
 from flask import Flask
 from backend.db.database import init_db
 from backend.api.auth import bp as auth_bp
 from backend.api.sessions import bp as sessions_bp
 from backend.api.users import bp as users_bp
-import os
 
 app = Flask(__name__)
 
