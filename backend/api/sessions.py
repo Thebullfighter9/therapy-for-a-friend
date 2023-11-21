@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from backend.db.models import User, db  # Import other necessary models
+from ..db.models import User, db  # Import other necessary models
 
 bp = Blueprint('sessions', __name__, url_prefix='/sessions')
 
