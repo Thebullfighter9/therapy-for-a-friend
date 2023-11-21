@@ -27,7 +27,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './frontend'  # Deploying the entire frontend directory
+          path: './frontend/templates'  # Specify the directory to upload
 
       - name: Deploy to GitHub Pages
         id: deployment
