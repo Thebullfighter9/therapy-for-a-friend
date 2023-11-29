@@ -1,19 +1,37 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["master"]
-  workflow_dispatch:
+    branches:
+      - master  # Adjust this as needed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Build and Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages  # The branch the action should deploy to.
-          folder: frontend   # The folder the action should deploy.
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # Adjust if your project needs a specific Python version
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt  # Adjust if you have Python dependencies
+
+    - name: Build Website
+      run: |
+        mkdir build
+        cp -R frontend/templates/* build/
+        cp -R frontend/static build/static
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages  # Deploying to the gh-pages branch
+        folder: build     # Directory to deploy
+        clean: true       # Automatically remove deleted files from the deployment
+
