@@ -1,34 +1,42 @@
-name: Deploy static content to GitHub Pages
+name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["master"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches:
+      - master  # Trigger on changes to the master branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v3
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Use a specific Python version
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: './frontend'  # Deploying the entire frontend directory
+    - name: Install Python Dependencies
+      if: exists('requirements.txt')
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+    - name: Build Website
+      run: |
+        mkdir build
+        cp -R frontend/templates/* build/
+        cp -R frontend/static build/static
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages  # The target deployment branch
+        folder: build     # Directory containing built site files
+        clean: true       # Clean out old files on deployment branch
+        commit-message: 'Deploying to gh-pages'  # Custom commit message
+
+    - name: Cleanup Post-deployment
+      if: always()
+      run: rm -rf build
